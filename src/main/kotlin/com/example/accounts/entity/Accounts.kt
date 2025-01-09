@@ -1,8 +1,12 @@
 package com.example.accounts.entity
 
 import jakarta.persistence.Column
+import jakarta.persistence.Entity
 import jakarta.persistence.Id
+import lombok.Data
 
+@Entity
+@Data
 data class Accounts(
     @Column(name="customer_id")
     var customerId:Long = 0L,

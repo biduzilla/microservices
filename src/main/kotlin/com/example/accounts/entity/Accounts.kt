@@ -1,8 +1,6 @@
 package com.example.accounts.entity
 
 import jakarta.persistence.Column
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 
 data class Accounts(

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="$PROJECT_DIR$/../.." vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../java" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../Kotlin" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../Kotlin Compose" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../RickyNotas" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../RickyNotas2" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../comunica_news" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../projetoVagasIFB" vcs="Git" />
+  </component>
+</project>

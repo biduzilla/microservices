@@ -1,10 +1,10 @@
-package com.example.accounts.controller
+package com.example.cards.controller
 
-import com.example.accounts.constants.AccountsConstants
-import com.example.accounts.dto.CustomerDTO
-import com.example.accounts.dto.ErrorResponseDTO
-import com.example.accounts.dto.ResponseDTO
-import com.example.accounts.service.IAccountsService
+import com.example.cards.constants.CardsConstants
+import com.example.cards.dto.CardsDto
+import com.example.cards.dto.ErrorResponseDTO
+import com.example.cards.dto.ResponseDTO
+import com.example.cards.service.ICardsService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
@@ -19,20 +19,19 @@ import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 
+
 @Tag(
-    name = "CRUD REST APIs for Accounts in EazyBank",
-    description = "CRUD REST APIs in EazyBank to CREATE, UPDATE, FETCH AND DELETE account details"
+    name = "CRUD REST APIs for Cards in EazyBank",
+    description = "CRUD REST APIs in EazyBank to CREATE, UPDATE, FETCH AND DELETE card details"
 )
 @RestController
 @RequestMapping(path = ["/api"], produces = [MediaType.APPLICATION_JSON_VALUE])
 @Validated
-class AccountsController(
-    private val iAccountsService: IAccountsService
-) {
+class CardsController(private val iCardsService: ICardsService) {
 
     @Operation(
-        summary = "Create Account REST API",
-        description = "REST API to create new Customer & Account inside EazyBank"
+        summary = "Create Card REST API",
+        description = "REST API to create new Card inside EazyBank"
     )
     @ApiResponses(
         value = [
@@ -55,22 +54,23 @@ class AccountsController(
         "/create",
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
-    fun createAccount(@Valid @RequestBody data: CustomerDTO): ResponseEntity<ResponseDTO> {
-        iAccountsService.createAccount(data)
+    fun createCard(
+        @Valid
+        @RequestParam
+        @Pattern(
+            regexp = "(^$|[0-9]{10})",
+            message = "Mobile number must be 10 digits"
+        ) mobileNumber: String
+    ): ResponseEntity<ResponseDTO> {
+        iCardsService.createCard(mobileNumber)
         return ResponseEntity
-            .status(
-                HttpStatus.CREATED
-            ).body(
-                ResponseDTO(
-                    statusCode = AccountsConstants.STATUS_201,
-                    statusMsg = AccountsConstants.MESSAGE_201
-                )
-            )
+            .status(HttpStatus.CREATED)
+            .body<ResponseDTO>(ResponseDTO(CardsConstants.STATUS_201, CardsConstants.MESSAGE_201))
     }
 
     @Operation(
-        summary = "Fetch Account Details REST API",
-        description = "REST API to fetch Customer &  Account details based on a mobile number"
+        summary = "Fetch Card Details REST API",
+        description = "REST API to fetch card details based on a mobile number"
     )
     @ApiResponses(
         value = [
@@ -89,22 +89,21 @@ class AccountsController(
             )
         ]
     )
-
     @GetMapping("/fetch")
-    fun fetchAccountDetails(
+    fun fetchCardDetails(
         @RequestParam
         @Pattern(
             regexp = "(^$|[0-9]{10})",
             message = "Mobile number must be 10 digits"
         ) mobileNumber: String
-    ): ResponseEntity<CustomerDTO> {
-        val data = iAccountsService.fetchAccount(mobileNumber = mobileNumber)
-        return ResponseEntity.status(HttpStatus.OK).body(data)
+    ): ResponseEntity<CardsDto> {
+        val cardsDto = iCardsService.fetchCard(mobileNumber)
+        return ResponseEntity.status(HttpStatus.OK).body(cardsDto)
     }
 
     @Operation(
-        summary = "Update Account Details REST API",
-        description = "REST API to update Customer &  Account details based on a account number"
+        summary = "Update Card Details REST API",
+        description = "REST API to update card details based on a card number"
     )
     @ApiResponses(
         value = [
@@ -128,32 +127,30 @@ class AccountsController(
         ]
     )
     @PutMapping("/update")
-    fun updateAccountDetails(@Valid @RequestBody customerDto: CustomerDTO): ResponseEntity<ResponseDTO> {
-        val isUpdated = iAccountsService.updateAccount(customerDto)
+    fun updateCardDetails(
+        @Valid @RequestBody cardsDto: CardsDto
+    ): ResponseEntity<ResponseDTO> {
+        val isUpdated = iCardsService.updateCard(cardsDto)
         return if (isUpdated) {
             ResponseEntity
                 .status(HttpStatus.OK)
-                .body<ResponseDTO>(ResponseDTO(AccountsConstants.STATUS_200, AccountsConstants.MESSAGE_200))
+                .body<ResponseDTO>(ResponseDTO(CardsConstants.STATUS_200, CardsConstants.MESSAGE_200))
         } else {
             ResponseEntity
                 .status(HttpStatus.EXPECTATION_FAILED)
-                .body<ResponseDTO>(ResponseDTO(AccountsConstants.STATUS_417, AccountsConstants.MESSAGE_417_UPDATE))
+                .body<ResponseDTO>(ResponseDTO(CardsConstants.STATUS_417, CardsConstants.MESSAGE_417_UPDATE))
         }
     }
 
     @Operation(
-        summary = "Delete Account & Customer Details REST API",
-        description = "REST API to delete Customer &  Account details based on a mobile number"
+        summary = "Delete Card Details REST API",
+        description = "REST API to delete Card details based on a mobile number"
     )
     @ApiResponses(
         value = [
             ApiResponse(
                 responseCode = "200",
                 description = "HTTP Status OK"
-            ),
-            ApiResponse(
-                responseCode = "417",
-                description = "Expectation Failed"
             ),
             ApiResponse(
                 responseCode = "500",
@@ -167,21 +164,21 @@ class AccountsController(
         ]
     )
     @DeleteMapping("/delete")
-    fun deleteAccountDetails(
+    fun deleteCardDetails(
         @RequestParam @Pattern(
             regexp = "(^$|[0-9]{10})",
             message = "Mobile number must be 10 digits"
-        ) mobileNumber: String?
+        ) mobileNumber: String
     ): ResponseEntity<ResponseDTO> {
-        val isDeleted = iAccountsService.deleteAccount(mobileNumber!!)
+        val isDeleted = iCardsService.deleteCard(mobileNumber)
         return if (isDeleted) {
             ResponseEntity
                 .status(HttpStatus.OK)
-                .body<ResponseDTO>(ResponseDTO(AccountsConstants.STATUS_200, AccountsConstants.MESSAGE_200))
+                .body<ResponseDTO>(ResponseDTO(CardsConstants.STATUS_200, CardsConstants.MESSAGE_200))
         } else {
             ResponseEntity
                 .status(HttpStatus.EXPECTATION_FAILED)
-                .body<ResponseDTO>(ResponseDTO(AccountsConstants.STATUS_417, AccountsConstants.MESSAGE_417_DELETE))
+                .body<ResponseDTO>(ResponseDTO(CardsConstants.STATUS_417, CardsConstants.MESSAGE_417_DELETE))
         }
     }
 }

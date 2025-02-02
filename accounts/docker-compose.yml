@@ -1,0 +1,39 @@
+services:
+  accounts:
+    image: "rlyowlly19/accounts-easybank:1.0"
+    container_name: accounts-ms
+    ports:
+      - "8080:8080"
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    networks:
+      - easybank
+  loans:
+    image: "rlyowlly19/loans-easybank:1.0"
+    container_name: loans-ms
+    ports:
+      - "8090:8090"
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    networks:
+      - easybank
+
+  cards:
+    image: "rlyowlly19/cards-easybank:1.0"
+    container_name: cards-ms
+    ports:
+      - "9000:9000"
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    networks:
+      - easybank
+
+networks:
+  easybank:
+    driver: "bridge"

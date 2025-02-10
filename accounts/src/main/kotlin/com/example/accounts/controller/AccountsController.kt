@@ -1,6 +1,7 @@
 package com.example.accounts.controller
 
 import com.example.accounts.constants.AccountsConstants
+import com.example.accounts.dto.AccountsContactInfoDto
 import com.example.accounts.dto.CustomerDTO
 import com.example.accounts.dto.ErrorResponseDTO
 import com.example.accounts.dto.ResponseDTO
@@ -13,6 +14,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Pattern
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.core.env.Environment
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -27,8 +30,13 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping(path = ["/api"], produces = [MediaType.APPLICATION_JSON_VALUE])
 @Validated
 class AccountsController(
-    private val iAccountsService: IAccountsService
+    private val iAccountsService: IAccountsService,
+    private val env:Environment,
+    private val accountsContactInfoDto:AccountsContactInfoDto
 ) {
+
+    @Value("\${build.version}")
+    private lateinit var buildVersion: String
 
     @Operation(
         summary = "Create Account REST API",
@@ -183,5 +191,84 @@ class AccountsController(
                 .status(HttpStatus.EXPECTATION_FAILED)
                 .body<ResponseDTO>(ResponseDTO(AccountsConstants.STATUS_417, AccountsConstants.MESSAGE_417_DELETE))
         }
+    }
+
+    @Operation(
+        summary = "Get build version",
+        description = "Get build information that is deployed into accounts microservices"
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "201",
+                description = "HTTP Status CREATED"
+            ),
+            ApiResponse(
+                responseCode = "500",
+                description = "HTTP Status Internal Server Error",
+                content = [
+                    Content(
+                        schema = Schema(implementation = ErrorResponseDTO::class)
+                    )
+                ]
+            )
+        ]
+    )
+    @GetMapping("/build-info")
+     fun getBuildInfo():ResponseEntity<String>{
+        return ResponseEntity.status(HttpStatus.OK).body(buildVersion)
+    }
+
+    @Operation(
+        summary = "Get Contact Info",
+        description = "Contact Info details that can be reached out in case of any issues"
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "201",
+                description = "HTTP Status CREATED"
+            ),
+            ApiResponse(
+                responseCode = "500",
+                description = "HTTP Status Internal Server Error",
+                content = [
+                    Content(
+                        schema = Schema(implementation = ErrorResponseDTO::class)
+                    )
+                ]
+            )
+        ]
+    )
+    @GetMapping("/contact-info")
+    fun getContactInfo():ResponseEntity<AccountsContactInfoDto>{
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(accountsContactInfoDto);
+    }
+
+    @Operation(
+        summary = "Get Java version",
+        description = "Get Java versions details that is installed into accounts microservice"
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "201",
+                description = "HTTP Status CREATED"
+            ),
+            ApiResponse(
+                responseCode = "500",
+                description = "HTTP Status Internal Server Error",
+                content = [
+                    Content(
+                        schema = Schema(implementation = ErrorResponseDTO::class)
+                    )
+                ]
+            )
+        ]
+    )
+    @GetMapping("/java-version")
+    fun getJavaVersion():ResponseEntity<String>{
+        return ResponseEntity.status(HttpStatus.OK).body(env.getProperty("JAVA_HOME"))
     }
 }

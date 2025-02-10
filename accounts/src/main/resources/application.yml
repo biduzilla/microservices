@@ -17,3 +17,14 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+
+build:
+  version: "1.0"
+
+accounts:
+  message: "Welcome to EazyBank accounts related local APIs "
+  contactDetails:
+    name: "Luiz Henrique - Developer"
+    email: "luizteles.devs@gmail.com"
+  onCallSupport:
+    - (99) 99999-99999

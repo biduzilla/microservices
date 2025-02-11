@@ -8,6 +8,7 @@ spring:
       server:
         git:
           uri: "https://github.com/biduzilla/microservices.git"
+          search-paths: "configserver/src/main/resources/config"
           default-label: main
           timeout: 5
           clone-on-start: true

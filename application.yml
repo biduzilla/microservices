@@ -2,20 +2,16 @@ spring:
   application:
     name: configServer
   profiles:
-    #    active: native
     active: git
   cloud:
     config:
       server:
-        #        native:
-        #          search-locations: "classpath:/config"
         git:
-          uri: "https://github.com/eazybytes/eazybytes-config.git"
+          uri: "https://github.com/biduzilla/microservices.git"
+          search-paths: "configserver/src/main/resources"
           default-label: main
           timeout: 5
           clone-on-start: true
           force-pull: true
-
-
 server:
   port: 8071

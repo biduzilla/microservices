@@ -35,8 +35,8 @@ class AccountsController(
     private val accountsContactInfoDto:AccountsContactInfoDto
 ) {
 
-    @Value("\${build.version}")
-    private lateinit var buildVersion: String
+//    @Value("\${build.version}")
+//    private lateinit var buildVersion: String
 
     @Operation(
         summary = "Create Account REST API",
@@ -193,31 +193,31 @@ class AccountsController(
         }
     }
 
-    @Operation(
-        summary = "Get build version",
-        description = "Get build information that is deployed into accounts microservices"
-    )
-    @ApiResponses(
-        value = [
-            ApiResponse(
-                responseCode = "201",
-                description = "HTTP Status CREATED"
-            ),
-            ApiResponse(
-                responseCode = "500",
-                description = "HTTP Status Internal Server Error",
-                content = [
-                    Content(
-                        schema = Schema(implementation = ErrorResponseDTO::class)
-                    )
-                ]
-            )
-        ]
-    )
-    @GetMapping("/build-info")
-     fun getBuildInfo():ResponseEntity<String>{
-        return ResponseEntity.status(HttpStatus.OK).body(buildVersion)
-    }
+//    @Operation(
+//        summary = "Get build version",
+//        description = "Get build information that is deployed into accounts microservices"
+//    )
+//    @ApiResponses(
+//        value = [
+//            ApiResponse(
+//                responseCode = "201",
+//                description = "HTTP Status CREATED"
+//            ),
+//            ApiResponse(
+//                responseCode = "500",
+//                description = "HTTP Status Internal Server Error",
+//                content = [
+//                    Content(
+//                        schema = Schema(implementation = ErrorResponseDTO::class)
+//                    )
+//                ]
+//            )
+//        ]
+//    )
+//    @GetMapping("/build-info")
+//     fun getBuildInfo():ResponseEntity<String>{
+//        return ResponseEntity.status(HttpStatus.OK).body(buildVersion)
+//    }
 
     @Operation(
         summary = "Get Contact Info",

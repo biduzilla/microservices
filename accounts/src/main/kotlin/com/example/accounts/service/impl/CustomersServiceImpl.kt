@@ -20,7 +20,7 @@ class CustomersServiceImpl(
     private val cardsFeignClient: CardsFeignClient,
     private val loansFeignClient: LoansFeignClient
 ) : ICustomersService {
-    override fun fetchCustomerDetails(mobileNumber: String): CustomerDetailsDto {
+    override fun fetchCustomerDetails(mobileNumber: String,correlationId:String): CustomerDetailsDto {
         val customer = customerRepository.findByMobileNumber(mobileNumber).orElseThrow {
             ResourceNotFoundException("Customer", "mobileNumber", mobileNumber)
         }
@@ -32,11 +32,11 @@ class CustomersServiceImpl(
         val customerDetailsDto = CustomerMapper.mapToCustomerDetailsDto(customer, CustomerDetailsDto())
         customerDetailsDto.accountsDto = AccountsMapper.mapToAccountsDTO(accounts)
 
-        val loansDtoResponseEntity: ResponseEntity<LoansDto> = loansFeignClient.fetchLoanDetails(mobileNumber)
+        val loansDtoResponseEntity: ResponseEntity<LoansDto> = loansFeignClient.fetchLoanDetails(correlationId,mobileNumber)
         loansDtoResponseEntity.body?.let {
             customerDetailsDto.loansDto = it
         }
-        val cardsDtoResponseEntity = cardsFeignClient.fetchCardDetails(mobileNumber)
+        val cardsDtoResponseEntity = cardsFeignClient.fetchCardDetails(correlationId,mobileNumber)
         cardsDtoResponseEntity.body?.let {
             customerDetailsDto.cardsDto = it
         }

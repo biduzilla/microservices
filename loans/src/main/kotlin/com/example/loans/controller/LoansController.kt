@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Pattern
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.*
 @Validated
 class LoansController(private val iLoansService: ILoansService) {
 
+    private val logger = LoggerFactory.getLogger(LoansController::class.java)
     @Operation(
         summary = "Create Loan REST API",
         description = "REST API to create new loan inside EazyBank"
@@ -80,10 +82,13 @@ class LoansController(private val iLoansService: ILoansService) {
     )
     @GetMapping("/fetch")
     fun fetchLoanDetails(
+        @RequestHeader("eazybank-correlation-id")
+        correlationId: String,
         @RequestParam
         @Pattern(regexp = "(^$|[0-9]{10})", message = "Mobile number must be 10 digits")
         mobileNumber: String
     ): ResponseEntity<LoansDto> {
+        logger.debug("eazyBank-correlation-id found: {} ", correlationId)
         val loansDto = iLoansService.fetchLoan(mobileNumber)
         return ResponseEntity.status(HttpStatus.OK).body(loansDto)
     }

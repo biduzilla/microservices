@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Pattern
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -28,7 +29,7 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping(path = ["/api"], produces = [MediaType.APPLICATION_JSON_VALUE])
 @Validated
 class CardsController(private val iCardsService: ICardsService) {
-
+    private val logger = LoggerFactory.getLogger(CardsController::class.java)
     @Operation(
         summary = "Create Card REST API",
         description = "REST API to create new Card inside EazyBank"
@@ -91,12 +92,15 @@ class CardsController(private val iCardsService: ICardsService) {
     )
     @GetMapping("/fetch")
     fun fetchCardDetails(
+        @RequestHeader("eazybank-correlation-id")
+        correlationId: String,
         @RequestParam
         @Pattern(
             regexp = "(^$|[0-9]{10})",
             message = "Mobile number must be 10 digits"
         ) mobileNumber: String
     ): ResponseEntity<CardsDto> {
+        logger.debug("eazyBank-correlation-id found: {} ", correlationId)
         val cardsDto = iCardsService.fetchCard(mobileNumber)
         return ResponseEntity.status(HttpStatus.OK).body(cardsDto)
     }

@@ -1,5 +1,6 @@
 package com.example.gatewayserver.filters
 
+import com.example.gatewayserver.filters.FilterUtility.Companion.CORRELATION_ID
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cloud.gateway.filter.GlobalFilter
@@ -21,10 +22,14 @@ class ResponseTraceFilter {
             chain.filter(exchange).then(Mono.fromRunnable {
                 val requestHeaders: HttpHeaders = exchange.request.headers
                 val correlationId = filterUtility.getCorrelationId(requestHeaders)
-                logger.debug("Updated the correlation id to the outbound headers: {}", correlationId)
-                correlationId?.let {
-                    exchange.response.headers.add(FilterUtility.CORRELATION_ID, it)
+
+                if(exchange.response.headers.containsKey(CORRELATION_ID)){
+                    logger.debug("Updated the correlation id to the outbound headers: {}", correlationId)
+                    correlationId?.let {
+                        exchange.response.headers.add(CORRELATION_ID, it)
+                    }
                 }
+
             })
         }
     }

@@ -6,6 +6,7 @@ import com.example.accounts.dto.CustomerDTO
 import com.example.accounts.dto.ErrorResponseDTO
 import com.example.accounts.dto.ResponseDTO
 import com.example.accounts.service.IAccountsService
+import io.github.resilience4j.retry.annotation.Retry
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
@@ -14,7 +15,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Pattern
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.env.Environment
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -31,8 +31,8 @@ import org.springframework.web.bind.annotation.*
 @Validated
 class AccountsController(
     private val iAccountsService: IAccountsService,
-    private val env:Environment,
-    private val accountsContactInfoDto:AccountsContactInfoDto
+    private val env: Environment,
+    private val accountsContactInfoDto: AccountsContactInfoDto
 ) {
 
 //    @Value("\${build.version}")
@@ -240,11 +240,18 @@ class AccountsController(
             )
         ]
     )
+    @Retry(name = "getContactInfo", fallbackMethod = "getContactInfoFallBack")
     @GetMapping("/contact-info")
-    fun getContactInfo():ResponseEntity<AccountsContactInfoDto>{
+    fun getContactInfo(): ResponseEntity<AccountsContactInfoDto> {
         return ResponseEntity.status(HttpStatus.OK)
             .body(accountsContactInfoDto);
     }
+
+    fun getContactInfoFallBack(throwable: Throwable): ResponseEntity<AccountsContactInfoDto> {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(null);
+    }
+
 
     @Operation(
         summary = "Get Java version",
@@ -268,7 +275,7 @@ class AccountsController(
         ]
     )
     @GetMapping("/java-version")
-    fun getJavaVersion():ResponseEntity<String>{
+    fun getJavaVersion(): ResponseEntity<String> {
         return ResponseEntity.status(HttpStatus.OK).body(env.getProperty("JAVA_HOME"))
     }
 }
